@@ -1,0 +1,41 @@
+name: Build RP2040 USB Microphone
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+    
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi libstdc++-arm-none-eabi-newlib build-essential
+    
+    - name: Clone Pico SDK
+      run: |
+        git clone https://github.com/raspberrypi/pico-sdk.git --depth 1
+        cd pico-sdk
+        git submodule update --init --depth 1
+    
+    - name: Build Project
+      run: |
+        export PICO_SDK_PATH=${GITHUB_WORKSPACE}/pico-sdk
+        mkdir build
+        cd build
+        cmake ..
+        make -j$(nproc)
+    
+    - name: Upload UF2 Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: usb_microphone.uf2
+        path: build/usb_microphone.uf2
