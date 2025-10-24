@@ -1,0 +1,19 @@
+.program i2s_rx
+; Einfacher I²S-Receiver (Left-Justified, 32 Bit pro Sample) für RP2040 PIO
+; Pin-Belegung:
+;   pin 0 = BCLK
+;   pin 1 = LRCLK (WS)
+; IN-Pin = DATA
+
+.wrap_target
+wait_left_start:
+    wait 0 pin 1         ; Warte bis LRCLK = 0 (Start linkes Sample)
+    set x, 31            ; 32 Bit einlesen
+bitloop:
+    wait 1 pin 0         ; BCLK steigende Flanke
+    in pins, 1           ; 1 Bit von DATA einlesen
+    wait 0 pin 0         ; BCLK fallende Flanke
+    jmp x-- bitloop
+    push block
+    jmp wait_left_start
+.wrap
