@@ -6,7 +6,7 @@
  */
 
 #include "usb_microphone.h"
-#include "i2s_pio_input.c"   // <-- unser I²S-Reader
+#include "i2s_pio_input.h"   // <-- unser I²S-Reader
 
 // ==== Audio control states ====
 bool mute[CFG_TUD_AUDIO_FUNC_1_N_CHANNELS_TX + 1];        // +1 for master channel 0
@@ -165,3 +165,4 @@ bool tud_audio_tx_done_post_load_cb(uint8_t rhport, uint16_t n_bytes_copied, uin
 
 bool tud_audio_set_itf_close_EP_cb(uint8_t rhport, tusb_control_request_t const * p_request)
 { (void)rhport; (void)p_request; return true; }
+
